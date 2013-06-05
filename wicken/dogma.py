@@ -26,12 +26,13 @@ implemented for a dictionary storage. A particular mapping from the flat namespa
 the properties to the metadata schema must be provided at runtime. 
 '''
 
-from lxml import etree
-from netCDF4 import Dataset
-
+import re
+from exceptions import DogmaGetterSetterException
+from exceptions import DogmaMetaClassException
+from exceptions import DogmaDeleteException
 
 class Tenants(object):
-    def __init__(self, belief, teaching, doc=None):
+    def __init__(self, belief, teaching, doc):
         '''
         belief is a string which will become a property of a particular dogma object
         teaching is the string, collection or object that is used by the _set and 
@@ -40,41 +41,90 @@ class Tenants(object):
         '''
         self.belief = belief
         self.teaching = teaching
-        if doc: self.__doc__ = doc
+        self.__doc__ = doc
+        
 
     def __get__(self, dogma, objtype=None):
-        print '__get__:', self.belief
-        return dogma._get(self.teaching)
+        try:
+            return dogma._get(self.teaching)
+        except Exception as ex:
+            exception_string = ''
+            exception_string += '''Error getting the '%s' property of the class '%s'\n''' % (self.belief, dogma.__class__.__name__)
+            exception_string += '''Instance data object status: '%s'\n''' % dogma._dataObject
+            exception_string += '''Get operation raised exception: '%s' ''' % ex
+            raise DogmaGetterSetterException(exception_string)
+        
         
     def __set__(self, dogma, value):
-        print '__set__:',self.belief
-        dogma._set(self.teaching,value)
+        try:
+            dogma._set(self.teaching,value)
+        except Exception as ex:
+            exception_string = ''
+            exception_string += '''Error setting the '%s' property of the class '%s'\n''' % (self.belief, dogma.__class__.__name__)
+            exception_string += '''Instance data object status: '%s'\n''' % dogma._dataObject
+            exception_string += '''Set operation raised exception: '%s' ''' % ex
+            raise DogmaGetterSetterException(exception_string)
         
     def __delete__(self, dogma):
-        raise NotImplementedError('Can not delete the %s property!' % self.belief)
-
+        try:
+            dogma._del(self.teaching)
+        except Exception as ex:
+            exception_string = ''
+            exception_string += '''Error deleting the '%s' property of the class '%s'\n''' % (self.belief, dogma.__class__.__name__)
+            exception_string += '''Instance data object status: '%s'\n''' % dogma._dataObject
+            exception_string += '''Delete operation raised exception: '%s' ''' % ex
+            raise DogmaDeleteException(exception_string)
+            
+            
 class MetaReligion(type):
+    """
+    Designed for working with metadata and all of the strong personal convictions that go
+    with it, 
+    """
 
     def __call__(cls, religion, beliefs, *args, **kwargs):
         '''
         cls is the base class which new properties will be added to
         religion is the unique prefix for that class and its beliefs (properties)
         beliefs is a dictionary that maps property names (IOOS metadata) to a particular schema (ISO, CF, etc) 
+        
+        @TODO - store the clsTypes so that they are only generated once - but how are they identified?
         '''
-        print 'call: religion: ', religion
-        print 'call: beliefs: ', beliefs
         clsName = religion + cls.__name__
         clsDict={}
+        
+        if re.match('^[\w-]+$', religion) is None:
+                raise DogmaMetaClassException('''Blasphemy! The name of your metadata religion (class name prefix: '%s') must be alpha numeric with no whitespace''' % religion)
+        
         clsDict['_religion'] = religion
         clsDict['_beliefs'] = beliefs
         
-        
         for belief, teaching in beliefs.iteritems():
-            clsDict[belief] = Tenants(belief, teaching)
+        
+            # check for invalid characters in the belief which is used as a property name
+            if re.match('^[\w-]+$', belief) is None:
+                raise DogmaMetaClassException('''blasphemous belief! (property name: '%s') - even god can not make properties with non-alpha-numeric with no whitespace''' % belief)
+    
+            if belief.startswith('_'):
+                raise DogmaMetaClassException('''Blasphemous belief! (property name: '%s') - even god can not make properties that start with an underscore''' % belief)
+    
+            # use a class method from the Dogma class to validate the teaching        
+            cls._validate_teaching(belief, teaching)
+              
+            clsDict[belief] = Tenants(belief, teaching, doc = cls._create_doc(belief,teaching))
         
         
-        clsType = MetaReligion.__new__(MetaReligion, clsName, (cls,), clsDict)
+        valid_propery_names = tuple(beliefs.keys())
+        
+        def obj_setter(self, k, v):
+            if not k.startswith('_') and k not in valid_propery_names:
+                raise AttributeError('''Blasphemy! You can't create the new beliefs (property %s) on an instance of %s - only god can create properties when the class is defined''' % (k, clsName))
+            super(Dogma, self).__setattr__(k, v)
 
+        clsDict['__setattr__'] = obj_setter
+        
+                
+        clsType = MetaReligion.__new__(MetaReligion, clsName, (cls,), clsDict)
 
         # Finally allow the instantiation to occur, but slip in our new class type
         obj = super(MetaReligion, clsType).__call__(religion, beliefs, *args, **kwargs)
@@ -86,14 +136,9 @@ class MetaReligion(type):
 class Dogma(object):
     __metaclass__ = MetaReligion
     
-    def __init__(self, religion, beliefs, dataObject):
-        print 'init: religion: ', religion
-        print 'init: beliefs: ', beliefs
-        print 'init: dataObect', dataObject
-        
+    def __init__(self, religion, beliefs, dataObject):        
         self._dataObject = dataObject
-        
-        
+                
         
     def _get(self, key):
         raise NotImplementedError('_get Method is not implemented in the Dogma Base Class!')
@@ -101,72 +146,29 @@ class Dogma(object):
     def _set(self, key, value):
         raise NotImplementedError('_set Method is not implemented in the Dogma Base Class!')
 
-
-class DictionaryDogma(Dogma):
-    
-    def __init__(self, religion, beliefs, dataObject=None):
-    
-        if dataObject is None:
-            dataObject = {}
-            
-        if not isinstance(dataObject, dict):
-            raise TypeError('DictionaryDogma only allows dictionary data objects!')
-
-        super(DictionaryDogma, self).__init__(religion, beliefs, dataObject)   
-
-    def _get(self,key):        
-        return self._dataObject.get(key)
+    def _del(self, key):
+        raise NotImplementedError('_del Method is not implemented in the Dogma Base Class!')
         
-    def _set(self,key,value):
-        self._dataObject.__setitem__(key,value)
 
-
-class XmlDogma(Dogma):
-    
-    def __init__(self, religion, beliefs, dataObject=None):
-    
-        if dataObject is None:
-            dataObject = etree.Element('root') # ???
-            
-        if not isinstance(dataObject, etree._Element):
-            raise TypeError('XmlDogma only allows XML Element data objects!')
-
-        super(XmlDogma, self).__init__(religion, beliefs, dataObject)   
-
-    def _get(self,xpath_args):        
-        return self._dataObject.xpath(*xpath_args).text # Needs testing
+    @classmethod
+    def _validate_teaching(cls, belief, teaching):
+        """
+        Default implementation of the validation method for the teaching objects used as 
+        keys in the _get and _set methods
+        """
+        pass
         
-    def _set(self,key,value):
-        element = self._dataObject.xpath(*xpath_args)
-        element.text = value
+
+    @classmethod
+    def _create_doc(cls, belief, teaching):
+        """
+        Default implementation to create a doc string for a tenant
+        """
+        return '''This is the belief that '%s' is the true name for '%s' as taught by the class %s''' % (belief, teaching, cls.__name__)
 
 
-class NetCDFDogma(Dogma):
 
 
-    def __init__(self, religion, beliefs, dataObject=None):
-    
-        if dataObject is None: # allow none - what is the title?
-            dataObject = Dataset('junk_metadata.nc','w')
-            
-        if not isinstance(dataObject, Dataset):
-            raise TypeError('NetCDFDogma only allows NetCDF4 Dataset data objects!')
 
-        super(NetCDFDogma, self).__init__(religion, beliefs, dataObject)   
-
-    def _get(self,key):        
-        try:
-            return getattr(self._dataObject,key)
-        except AttributeError:
-            return None
-        
-    def _set(self,key,value):
-        setattr(self._dataObject,key,value)
-        
-    def _write(self):
-    
-        self._dataObject.close()
-        
-        
 
 

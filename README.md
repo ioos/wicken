@@ -1,7 +1,7 @@
 wicken
 ======
 metadata companion library for paegan data model
-
+COPYRIGHT 2013 David Stuebe
 
 description
 ============
