@@ -51,7 +51,7 @@ class Tenants(object):
             exception_string = ''
             exception_string += '''Error getting the '%s' property of the class '%s'\n''' % (self.belief, dogma.__class__.__name__)
             exception_string += '''Instance data object status: '%s'\n''' % dogma._dataObject
-            exception_string += '''Get operation raised exception: '%s' ''' % ex
+            exception_string += '''Get operation raised exception: '%s' ''' % ex.__repr__()
             raise DogmaGetterSetterException(exception_string)
         
         
@@ -62,7 +62,7 @@ class Tenants(object):
             exception_string = ''
             exception_string += '''Error setting the '%s' property of the class '%s'\n''' % (self.belief, dogma.__class__.__name__)
             exception_string += '''Instance data object status: '%s'\n''' % dogma._dataObject
-            exception_string += '''Set operation raised exception: '%s' ''' % ex
+            exception_string += '''Set operation raised exception: '%s' ''' % ex.__repr__()
             raise DogmaGetterSetterException(exception_string)
         
     def __delete__(self, dogma):
@@ -72,7 +72,7 @@ class Tenants(object):
             exception_string = ''
             exception_string += '''Error deleting the '%s' property of the class '%s'\n''' % (self.belief, dogma.__class__.__name__)
             exception_string += '''Instance data object status: '%s'\n''' % dogma._dataObject
-            exception_string += '''Delete operation raised exception: '%s' ''' % ex
+            exception_string += '''Delete operation raised exception: '%s' ''' % ex.__repr__()
             raise DogmaDeleteException(exception_string)
             
             
@@ -103,7 +103,7 @@ class MetaReligion(type):
         
             # check for invalid characters in the belief which is used as a property name
             if re.match('^[\w-]+$', belief) is None:
-                raise DogmaMetaClassException('''blasphemous belief! (property name: '%s') - even god can not make properties with non-alpha-numeric with no whitespace''' % belief)
+                raise DogmaMetaClassException('''blasphemous belief! (property name: '%s') - even god can not make properties with non-alpha-numeric symbols or whitespace''' % belief)
     
             if belief.startswith('_'):
                 raise DogmaMetaClassException('''Blasphemous belief! (property name: '%s') - even god can not make properties that start with an underscore''' % belief)

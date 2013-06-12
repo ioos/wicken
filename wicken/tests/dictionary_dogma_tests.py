@@ -1,3 +1,28 @@
+#!/usr/bin/env python
+'''
+COPYRIGHT 2013 David Stuebe
+
+This file is part of Wicken.
+
+    Wicken is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Wicken is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Wicken.  If not, see <http://www.gnu.org/licenses/>.
+
+@author David Stuebe <dstuebe@asasscience.com>
+@file dictionary_dogma_tests.py
+@date 06/05/13
+@description test cases for the DictionaryDogma class which is a reference implementation 
+'''
+
 from nose.tools import *
 import unittest
 
@@ -6,8 +31,9 @@ from wicken.dictionary_dogma import DictionaryDogma
 from wicken.dictionary_dogma import DictionaryDogmaException
 from wicken.exceptions import DogmaMetaClassException
 from wicken.exceptions import DogmaGetterSetterException
+from wicken.exceptions import DogmaDeleteException
 
-class DomgaTest(unittest.TestCase):
+class DictionaryDomgaTest(unittest.TestCase):
 
     def setUp(self):
         """
@@ -89,6 +115,14 @@ class DomgaTest(unittest.TestCase):
         del d.foo
         assert_equal(d._dataObject.get('bar'),None)
         assert_equal(d.foo, None)
+        
+        # Call it again!
+        with assert_raises(DogmaDeleteException):
+            del d.foo
+        
+        
+        with assert_raises(AttributeError):
+            del d.not_an_att
        
        
        
@@ -105,11 +139,11 @@ class DomgaTest(unittest.TestCase):
         DictionaryDogma._validate_teaching('foo','bar')
         assert_is(ret, None)
         
-        with assert_raises_regexp(DictionaryDogmaException,"""The teaching """):
+        with assert_raises_regexp(DictionaryDogmaException,"""The belief """):
             ret = d._validate_teaching('foo',[])
         
         
-        with assert_raises_regexp(DictionaryDogmaException,"""The teaching """):
+        with assert_raises_regexp(DictionaryDogmaException,"""The belief """):
             beliefs = {'foo':[],'bat':'baz'}
             d = DictionaryDogma('CF',beliefs,None)
         

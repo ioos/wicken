@@ -20,10 +20,8 @@ This file is part of Wicken.
 @author David Stuebe <dstuebe@asasscience.com>
 @file dictionary_dogma.py
 @date 06/03/13
-@description The dogma module provides a metaclass based approach to mapping a flat name 
-space for class properties to any storage format and metadata schema. Example classes are
-implemented for a dictionary storage. A particular mapping from the flat namespace used for
-the properties to the metadata schema must be provided at runtime. 
+@description DictionaryDogma is a reference implementation for the simplest possible 
+application of the dogmatic mapping concept. 
 '''
 
 from exceptions import WickenException
@@ -65,5 +63,5 @@ class DictionaryDogma(dogma.Dogma):
         Check to make sure the teaching object which will be used as a dictionary key is hashable
         """
         if teaching.__hash__ is None:
-            raise DictionaryDogmaException(''''The teaching '%s' is not hashable for the belief '%s' ''' % (teaching, belief))
+            raise DictionaryDogmaException(''''The belief '%s' does not have a hashable teaching '%s' ''' % (belief, teaching ))
         
