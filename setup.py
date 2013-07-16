@@ -20,6 +20,7 @@ setup(
     license='GNU GPL',
     keywords='Metadata ISO OGC NetCDF lxml xml ncml',
     packages= ['wicken'],
+    dependency_links = ['http://github.com/dstuebe/petulant-bear/tarball/master#egg=0.1']
     install_requires = [
             'nose>=1.2.0',
             'lxml>=3.2.1',
