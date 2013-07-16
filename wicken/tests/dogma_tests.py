@@ -29,7 +29,7 @@ import unittest
 
 from wicken.dogma import Dogma
 from wicken.dogma import MetaReligion
-from wicken.dogma import Tenants
+from wicken.dogma import Tenets
 
 from wicken.exceptions import DogmaMetaClassException
 from wicken.exceptions import DogmaGetterSetterException
@@ -67,12 +67,12 @@ class DomgaTest(unittest.TestCase):
         assert_is(d._beliefs,beliefs)
         assert_is(d.__class__._beliefs, beliefs)
         assert_is(d.__class__._religion, 'CF')
-        assert_is_instance(d.__class__.__dict__.get('foo'), Tenants)
-        assert_is_instance(d.__class__.__dict__.get('bat'), Tenants)
+        assert_is_instance(d.__class__.__dict__.get('foo'), Tenets)
+        assert_is_instance(d.__class__.__dict__.get('bat'), Tenets)
 
-        bat_tenant = d.__class__.__dict__.get('bat')
-        assert_equal(bat_tenant.belief, 'bat')
-        assert_equal(bat_tenant.teaching,'baz')
+        bat_tenet = d.__class__.__dict__.get('bat')
+        assert_equal(bat_tenet.belief, 'bat')
+        assert_equal(bat_tenet.teaching,'baz')
         
         
         with assert_raises_regexp(DogmaMetaClassException,"Blasphemy! The name of your metadata religion"):

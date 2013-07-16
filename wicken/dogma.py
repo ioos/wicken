@@ -31,7 +31,7 @@ from exceptions import DogmaGetterSetterException
 from exceptions import DogmaMetaClassException
 from exceptions import DogmaDeleteException
 
-class Tenants(object):
+class Tenets(object):
     def __init__(self, belief, teaching, doc):
         '''
         belief is a string which will become a property of a particular dogma object
@@ -111,7 +111,7 @@ class MetaReligion(type):
             # use a class method from the Dogma class to validate the teaching        
             cls._validate_teaching(belief, teaching)
               
-            clsDict[belief] = Tenants(belief, teaching, doc = cls._create_doc(belief,teaching))
+            clsDict[belief] = Tenets(belief, teaching, doc = cls._create_doc(belief,teaching))
         
         
         valid_propery_names = tuple(beliefs.keys())
@@ -162,7 +162,7 @@ class Dogma(object):
     @classmethod
     def _create_doc(cls, belief, teaching):
         """
-        Default implementation to create a doc string for a tenant
+        Default implementation to create a doc string for a tenet
         """
         return '''This is the belief that '%s' is the true name for '%s' as taught by the class %s''' % (belief, teaching, cls.__name__)
 
