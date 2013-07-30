@@ -66,10 +66,10 @@ class XmlDogma(dogma.Dogma):
                 raise XmlDogmaException('Invalid xpath expression "%s" returns more than one element!' % xpath)
                 
         if isinstance(result, etree._Element):
-            print type(result.text)
+            #print type(result.text)
             result = result.text
         elif isinstance(result, etree._ElementStringResult):
-            print type(result)
+            #print type(result)
             result = str(result)        
         
         return result

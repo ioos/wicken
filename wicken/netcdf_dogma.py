@@ -43,7 +43,7 @@ class NetCDFDogma(xml_dogma.XmlDogma):
 
         root = parse_nc_dataset_as_etree(dataObject)
 
-        super(NetCDFDogma, self).__init__(religion, beliefs, root)   
+        super(NetCDFDogma, self).__init__(religion, beliefs, root, namespaces=namespaces)   
 
         
     @classmethod
