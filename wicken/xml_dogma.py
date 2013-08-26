@@ -196,11 +196,11 @@ class XmlDogma(dogma.Dogma):
         """
         Check to make sure the teaching object which will be used as a dictionary key is hashable
         """
-        if not isinstance(teaching, str):
-            raise XmlDogmaException('The belief "%s " does not have a valid teaching. The Teaching must be an xpath expression string. Received teaching: "%s"' % (belief, teaching))
+        if not isinstance(teaching, basestring):
+            raise XmlDogmaException('The belief "%s" does not have a valid teaching. The Teaching must be an xpath expression string. Received teaching: "%s" (type: %s)' % (belief, teaching, typeof(teaching)))
         
         if teaching.startswith('//'):
-            raise XmlDogmaException('The belief "%s " does not have a valid teaching. The Teaching must be a unique xpath expression which can not start with "//". Received teaching: "%s"' % (belief, teaching))
+            raise XmlDogmaException('The belief "%s" does not have a valid teaching. The Teaching must be a unique xpath expression which can not start with "//". Received teaching: "%s"' % (belief, teaching))
         
         
         
