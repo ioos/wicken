@@ -182,9 +182,11 @@ class XmlDomgaTest(unittest.TestCase):
 
         d = XmlDogma('Books',beliefs,dataObject)
         
-        assert_is(d._get('bzzz'),None)
+        with assert_raises(XmlDogmaException):
+            d._get('bzzz')
 
-        assert_is(d.book_title,None)
+        with assert_raises(DogmaGetterSetterException):
+            d.book_title
 
         with assert_raises(AttributeError):
             d.not_an_att
@@ -193,6 +195,7 @@ class XmlDomgaTest(unittest.TestCase):
     def test_dogma_get_element(self):
     
         beliefs = {'book_title':'/bookstore/book[1]/title',
+        'no_title':'/bookstore/book[5]/title',
         'childrens_title':"""/bookstore/book[@category = 'CHILDREN']/title""",
         'childrens_year':"""/bookstore/book[@category = 'CHILDREN']/year"""}
         dataObject = etree.parse(StringIO(BOOKS))        
@@ -206,6 +209,9 @@ class XmlDomgaTest(unittest.TestCase):
         assert_equal(d.childrens_title, 'Harry Potter')
         
         assert_equal(d.childrens_year, '2005')
+        
+        with assert_raises(DogmaGetterSetterException):
+            d.no_title
        
         
     def test_dogma_get_existing_attribute(self):
@@ -250,8 +256,11 @@ class XmlDomgaTest(unittest.TestCase):
         
         del d.book_category
 
-        assert_equal(d._get('/bookstore/book[1]/@category'),None)
-        assert_equal(d.book_category, None)
+        with assert_raises(XmlDogmaException):
+            d._get('/bookstore/book[1]/@category')
+            
+        with assert_raises(DogmaGetterSetterException):
+            assert_equal(d.book_category, None)
 
 
     def test_dogma_del_element(self):
@@ -265,8 +274,10 @@ class XmlDomgaTest(unittest.TestCase):
         
         del d.book_title
 
-        assert_equal(d._get('/bookstore/book[1]/title'),None)
-        assert_equal(d.book_title, None)
+        with assert_raises(XmlDogmaException):  
+            d._get('/bookstore/book[1]/title')
+        with assert_raises(DogmaGetterSetterException):
+            d.book_title
 
 
             

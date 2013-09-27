@@ -50,7 +50,7 @@ class Tenets(object):
         except Exception as ex:
             exception_string = ''
             exception_string += '''Error getting the '%s' property of the class '%s'\n''' % (self.belief, dogma.__class__.__name__)
-            exception_string += '''Instance data object status: '%s'\n''' % dogma._dataObject
+            #exception_string += '''Instance data object status: '%s'\n''' % dogma._dataObject
             exception_string += '''Get operation raised exception: '%s' ''' % ex.__repr__()
             raise DogmaGetterSetterException(exception_string)
         
@@ -61,7 +61,7 @@ class Tenets(object):
         except Exception as ex:
             exception_string = ''
             exception_string += '''Error setting the '%s' property of the class '%s'\n''' % (self.belief, dogma.__class__.__name__)
-            exception_string += '''Instance data object status: '%s'\n''' % dogma._dataObject
+            #exception_string += '''Instance data object status: '%s'\n''' % dogma._dataObject
             exception_string += '''Set operation raised exception: '%s' ''' % ex.__repr__()
             raise DogmaGetterSetterException(exception_string)
         
@@ -71,7 +71,7 @@ class Tenets(object):
         except Exception as ex:
             exception_string = ''
             exception_string += '''Error deleting the '%s' property of the class '%s'\n''' % (self.belief, dogma.__class__.__name__)
-            exception_string += '''Instance data object status: '%s'\n''' % dogma._dataObject
+            #exception_string += '''Instance data object status: '%s'\n''' % dogma._dataObject
             exception_string += '''Delete operation raised exception: '%s' ''' % ex.__repr__()
             raise DogmaDeleteException(exception_string)
             

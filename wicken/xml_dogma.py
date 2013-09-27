@@ -61,10 +61,10 @@ class XmlDogma(dogma.Dogma):
             if result_length == 1:
                 result = result[0]
             elif result_length == 0:
-                return None
+                raise XmlDogmaException('Xpath expression "%s" returns zero elements!' % xpath) 
             else:
-                raise XmlDogmaException('Invalid xpath expression "%s" returns more than one element!' % xpath)
-                
+                raise XmlDogmaException('Xpath expression "%s" returns more than one element!' % xpath)      
+        
         if isinstance(result, etree._Element):
             #print type(result.text)
             result = result.text
@@ -197,7 +197,7 @@ class XmlDogma(dogma.Dogma):
         Check to make sure the teaching object which will be used as a dictionary key is hashable
         """
         if not isinstance(teaching, basestring):
-            raise XmlDogmaException('The belief "%s" does not have a valid teaching. The Teaching must be an xpath expression string. Received teaching: "%s" (type: %s)' % (belief, teaching, typeof(teaching)))
+            raise XmlDogmaException('The belief "%s" does not have a valid teaching. The Teaching must be an xpath expression string. Received teaching: "%s" (type: %s)' % (belief, teaching, type(teaching)))
         
         if teaching.startswith('//'):
             raise XmlDogmaException('The belief "%s" does not have a valid teaching. The Teaching must be a unique xpath expression which can not start with "//". Received teaching: "%s"' % (belief, teaching))

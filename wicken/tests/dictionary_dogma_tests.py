@@ -94,12 +94,16 @@ class DictionaryDomgaTest(unittest.TestCase):
         d = DictionaryDogma('CF',beliefs,{'bar':'boo'})
        
         assert_equal(d._get('bar'),'boo')
-        assert_equal(d._get('bzzz'),None)
+        with assert_raises(KeyError):
+            d._get('bzzz')
         
         assert_equal(d.foo, 'boo') 
        
         with assert_raises(AttributeError):
             d.not_an_att
+            
+        with assert_raises(DogmaGetterSetterException):
+            d.bat
        
     def test_dogma_del(self):
     
@@ -113,20 +117,18 @@ class DictionaryDomgaTest(unittest.TestCase):
         d._dataObject['bar'] = 'bamboo'
         assert_equal(d.foo, 'bamboo')
         del d.foo
-        assert_equal(d._dataObject.get('bar'),None)
-        assert_equal(d.foo, None)
+        
+        assert_equal(d._dataObject.get('bar'), None)
+        
+        with assert_raises(DogmaGetterSetterException):
+            d.foo
         
         # Call it again!
         with assert_raises(DogmaDeleteException):
             del d.foo
         
-        
         with assert_raises(AttributeError):
             del d.not_an_att
-       
-       
-       
-       
             
     def test_dogma_validate_teaching(self):
 
