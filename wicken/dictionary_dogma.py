@@ -48,7 +48,7 @@ class DictionaryDogma(dogma.Dogma):
         super(DictionaryDogma, self).__init__(religion, beliefs, dataObject)   
 
     def _get(self,key):        
-        return self._dataObject.get(key)
+        return self._dataObject[key]
         
     def _set(self,key,value):
         self._dataObject.__setitem__(key,value)
