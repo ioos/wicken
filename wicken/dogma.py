@@ -107,11 +107,17 @@ class MetaReligion(type):
     
             if belief.startswith('_'):
                 raise DogmaMetaClassException('''Blasphemous belief! (property name: '%s') - even god can not make properties that start with an underscore''' % belief)
-    
+
+            if isinstance(teaching, dict):
+                doc      = teaching['desc']
+                teaching = teaching['query']
+            else:
+                doc      = cls._create_doc(belief, teaching)
+
             # use a class method from the Dogma class to validate the teaching        
             cls._validate_teaching(belief, teaching)
-              
-            clsDict[belief] = Tenets(belief, teaching, doc = cls._create_doc(belief,teaching))
+
+            clsDict[belief] = Tenets(belief, teaching, doc=doc)
         
         
         valid_propery_names = tuple(beliefs.keys())
