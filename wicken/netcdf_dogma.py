@@ -24,6 +24,7 @@ This file is part of Wicken.
 '''
 
 from petulantbear.netcdf_etree import *
+from petulantbear.netcdf_etree import namespaces as default_namespaces
 import xml_dogma
 from exceptions import WickenException
 
@@ -36,16 +37,17 @@ class NetCDFDogmaException(WickenException):
 class NetCDFDogma(xml_dogma.XmlDogma):
 
 
-    def __init__(self, religion, beliefs, dataObject=None):
-    
+    def __init__(self, religion, beliefs, dataObject=None, namespaces=None):
+
         if not isinstance(dataObject, Dataset):
             raise TypeError('NetCDFDogma only allows NetCDF4 Dataset data objects!')
 
         root = parse_nc_dataset_as_etree(dataObject)
+        namespaces = namespaces or default_namespaces
 
-        super(NetCDFDogma, self).__init__(religion, beliefs, root, namespaces=namespaces)   
+        super(NetCDFDogma, self).__init__(religion, beliefs, root, namespaces=namespaces)
 
-        
+
     @classmethod
     def _validate_teaching(cls, belief, teaching):
         """
