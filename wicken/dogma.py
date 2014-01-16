@@ -100,13 +100,16 @@ class MetaReligion(type):
         clsDict['_religion'] = religion
         clsDict['_beliefs'] = beliefs
         
-        for belief, teaching in beliefs.iteritems():
+        for origbelief, teaching in beliefs.iteritems():
         
-            belief, opts = cls._fixup_belief(belief)
+            belief, opts = cls._fixup_belief(origbelief)
 
             if isinstance(teaching, dict):
                 doc      = teaching['desc']
                 teaching = teaching['query']
+
+                # store old name
+                teaching['original_name'] = origbelief
             else:
                 doc      = cls._create_doc(belief, teaching)
 
