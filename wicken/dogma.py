@@ -99,6 +99,7 @@ class MetaReligion(type):
         
         clsDict['_religion'] = religion
         clsDict['_beliefs'] = beliefs
+        clsDict['_fixup_belief'] = cls._fixup_belief
         
         for origbelief, teaching in beliefs.iteritems():
         
