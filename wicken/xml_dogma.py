@@ -53,7 +53,7 @@ class XmlDogma(dogma.Dogma):
         self._namespaces = namespaces
         super(XmlDogma, self).__init__(religion, beliefs, dataObject)   
 
-    def _get(self,xpath): 
+    def _get(self,xpath, options=None): 
         result = self._eval_xpath(xpath)
         
         if isinstance(result, list):
@@ -75,7 +75,7 @@ class XmlDogma(dogma.Dogma):
         return result
         
         
-    def _set(self,xpath,value):
+    def _set(self,xpath,value, options=None):
         result = self._eval_xpath(xpath)
         
         if isinstance(result, list):
@@ -94,7 +94,7 @@ class XmlDogma(dogma.Dogma):
             name = result.attrname
             parent.attrib[name] = value   
         
-    def _del(self, xpath):
+    def _del(self, xpath, options=None):
     
         result = self._eval_xpath(xpath)
         if isinstance(result, list):
@@ -207,3 +207,42 @@ class XmlDogma(dogma.Dogma):
         
         
         
+class MultipleXmlDogma(XmlDogma):
+    """
+    A mostly read-only Dogma that allows the returning of multiple values from a belief.
+
+    Your beliefs that require multiple return values should have a key that ends with the
+    '*' character.
+    """
+    def __init__(self, religion, beliefs, dataObject=None, namespaces=None):
+        XmlDogma.__init__(self, religion, beliefs, dataObject=dataObject, namespaces=namespaces)
+
+    def _get(self, xpath, options=None):
+        if options and 'multiple' in options:
+            result = self._eval_xpath(xpath)
+
+            def get_text(el):
+                if isinstance(el, etree._Element):
+                    return el.text
+                elif isinstance(el, etree._ElementStringResult):
+                    return str(el)
+
+            if not isinstance(result, list):
+                result = [result]
+
+            return map(get_text, result)
+
+        return super(MultipleXmlDogma, self)._get(xpath, options=options)
+
+    def _set(self, xpath, options=None):
+        if options and 'multiple' in options:
+            raise NotImplementedError("Cannot set a belief with the multiple option")
+
+        return super(MultipleXmlDogma, self)._set(xpath, options=options)
+
+    def _del(self, xpath, options=None):
+        if options and 'multiple' in opitons:
+            raise NotImplementedError("Cannot delete a belief with the multiple option")
+
+        return super(MultipleXmlDogma, self)._set(xpath, options=options)
+

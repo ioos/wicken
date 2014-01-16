@@ -32,7 +32,7 @@ from exceptions import DogmaMetaClassException
 from exceptions import DogmaDeleteException
 
 class Tenets(object):
-    def __init__(self, belief, teaching, doc):
+    def __init__(self, belief, teaching, doc, options=None):
         '''
         belief is a string which will become a property of a particular dogma object
         teaching is the string, collection or object that is used by the _set and 
@@ -42,11 +42,12 @@ class Tenets(object):
         self.belief = belief
         self.teaching = teaching
         self.__doc__ = doc
+        self.options = options or {}
         
 
     def __get__(self, dogma, objtype=None):
         try:
-            return dogma._get(self.teaching)
+            return dogma._get(self.teaching, self.options)
         except Exception as ex:
             exception_string = ''
             exception_string += '''Error getting the '%s' property of the class '%s'\n''' % (self.belief, dogma.__class__.__name__)
@@ -57,7 +58,7 @@ class Tenets(object):
         
     def __set__(self, dogma, value):
         try:
-            dogma._set(self.teaching,value)
+            dogma._set(self.teaching, value, self.options)
         except Exception as ex:
             exception_string = ''
             exception_string += '''Error setting the '%s' property of the class '%s'\n''' % (self.belief, dogma.__class__.__name__)
@@ -67,7 +68,7 @@ class Tenets(object):
         
     def __delete__(self, dogma):
         try:
-            dogma._del(self.teaching)
+            dogma._del(self.teaching, self.options)
         except Exception as ex:
             exception_string = ''
             exception_string += '''Error deleting the '%s' property of the class '%s'\n''' % (self.belief, dogma.__class__.__name__)
@@ -101,12 +102,7 @@ class MetaReligion(type):
         
         for belief, teaching in beliefs.iteritems():
         
-            # check for invalid characters in the belief which is used as a property name
-            if re.match('^[\w-]+$', belief) is None:
-                raise DogmaMetaClassException('''blasphemous belief! (property name: '%s') - even god can not make properties with non-alpha-numeric symbols or whitespace''' % belief)
-    
-            if belief.startswith('_'):
-                raise DogmaMetaClassException('''Blasphemous belief! (property name: '%s') - even god can not make properties that start with an underscore''' % belief)
+            belief, opts = cls._fixup_belief(belief)
 
             if isinstance(teaching, dict):
                 doc      = teaching['desc']
@@ -117,7 +113,7 @@ class MetaReligion(type):
             # use a class method from the Dogma class to validate the teaching        
             cls._validate_teaching(belief, teaching)
 
-            clsDict[belief] = Tenets(belief, teaching, doc=doc)
+            clsDict[belief] = Tenets(belief, teaching, doc=doc, options=opts)
         
         
         valid_propery_names = tuple(beliefs.keys())
@@ -137,7 +133,36 @@ class MetaReligion(type):
 
         return obj
 
+    @classmethod
+    def _fixup_belief(cls, belief):
+        """
+        Transforms beliefs into valid strings if possible and parses any options.
 
+        If it has spaces, they are converted to underscores and the name is lowercased.
+            ex: "Sensor Names" -> "sensor_names"
+
+        Options:
+            Multiple values: a belief with a suffix of "*" will allow multiple values returned from the get
+                             when used with MultipleXmlDogma.
+        """
+        extra = {}
+
+        if ' ' in belief:
+            belief = belief.replace(' ', '_')
+            belief = belief.lower()
+
+        if belief.endswith("*"):
+            belief = belief[:-1]
+            extra['multiple'] = True
+
+        # check for invalid characters in the belief which is used as a property name
+        if re.match('^[\w-]+$', belief) is None:
+            raise DogmaMetaClassException('''blasphemous belief! (property name: '%s') - even god can not make properties with non-alpha-numeric symbols or whitespace''' % belief)
+
+        if belief.startswith('_'):
+            raise DogmaMetaClassException('''Blasphemous belief! (property name: '%s') - even god can not make properties that start with an underscore''' % belief)
+
+        return belief, extra
 
 class Dogma(object):
     __metaclass__ = MetaReligion
