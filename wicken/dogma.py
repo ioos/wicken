@@ -142,18 +142,18 @@ class MetaReligion(type):
         """
         Transforms beliefs into valid strings if possible and parses any options.
 
-        If it has spaces, they are converted to underscores and the name is lowercased.
-            ex: "Sensor Names" -> "sensor_names"
+        Beliefs will always be lowercased.
+        If it has spaces, they are converted to underscores ex: "Sensor Names" -> "sensor_names"
 
         Options:
             Multiple values: a belief with a suffix of "*" will allow multiple values returned from the get
                              when used with MultipleXmlDogma.
         """
         extra = {}
+        belief = belief.lower()
 
         if ' ' in belief:
             belief = belief.replace(' ', '_')
-            belief = belief.lower()
 
         if belief.endswith("*"):
             belief = belief[:-1]
