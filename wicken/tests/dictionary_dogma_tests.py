@@ -33,7 +33,7 @@ from wicken.exceptions import DogmaMetaClassException
 from wicken.exceptions import DogmaGetterSetterException
 from wicken.exceptions import DogmaDeleteException
 
-class DictionaryDomgaTest(unittest.TestCase):
+class DictionaryDogmaTest(unittest.TestCase):
 
     def setUp(self):
         """
@@ -136,10 +136,10 @@ class DictionaryDomgaTest(unittest.TestCase):
         d = DictionaryDogma('CF',beliefs,None)
         
         ret = d._validate_teaching('foo','bar')
-        assert_is(ret, None)
+        assert_is(ret, 'bar')
         
         DictionaryDogma._validate_teaching('foo','bar')
-        assert_is(ret, None)
+        assert_is(ret, 'bar')
         
         with assert_raises_regexp(DictionaryDogmaException,"""The belief """):
             ret = d._validate_teaching('foo',[])

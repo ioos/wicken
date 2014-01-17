@@ -34,7 +34,8 @@ from wicken.dogma import Tenets
 from wicken.exceptions import DogmaMetaClassException
 from wicken.exceptions import DogmaGetterSetterException
 from wicken.exceptions import DogmaDeleteException
-class DomgaTest(unittest.TestCase):
+
+class DogmaTest(unittest.TestCase):
 
     def setUp(self):
         """
@@ -130,10 +131,10 @@ class DomgaTest(unittest.TestCase):
         d = Dogma('CF',beliefs,None)
         
         ret = d._validate_teaching('foo','bar')
-        assert_is(ret, None)
+        assert_is(ret, 'bar')
         
         Dogma._validate_teaching('foo','bar')
-        assert_is(ret, None)
+        assert_is(ret, 'bar')
         
         
         

@@ -53,29 +53,31 @@ class XmlDogma(dogma.Dogma):
         self._namespaces = namespaces
         super(XmlDogma, self).__init__(religion, beliefs, dataObject)   
 
-    def _get(self,xpath, options=None): 
-        result = self._eval_xpath(xpath)
+    def _get(self, teaching, options=None): 
+        result = self._eval(teaching)
         
         if isinstance(result, list):
             result_length = len(result)
             if result_length == 1:
                 result = result[0]
             elif result_length == 0:
-                raise XmlDogmaException('Xpath expression "%s" returns zero elements!' % xpath) 
+                raise XmlDogmaException('Teaching "%s" returns zero elements!' % teaching)
             else:
-                raise XmlDogmaException('Xpath expression "%s" returns more than one element!' % xpath)      
-        
+                raise XmlDogmaException('Teaching "%s" returns more than one element!' % teaching)
+
         if isinstance(result, etree._Element):
             #print type(result.text)
             result = result.text
-        elif isinstance(result, etree._ElementStringResult):
+        elif isinstance(result, etree._ElementStringResult) or isinstance(result, etree._XSLTResultTree):
             #print type(result)
-            result = str(result)        
-        
+            result = str(result)
+
         return result
-        
-        
+
+
     def _set(self,xpath,value, options=None):
+        raise NotImplementedError()
+
         result = self._eval_xpath(xpath)
         
         if isinstance(result, list):
@@ -96,6 +98,8 @@ class XmlDogma(dogma.Dogma):
         
     def _del(self, xpath, options=None):
     
+        raise NotImplementedError()
+
         result = self._eval_xpath(xpath)
         if isinstance(result, list):
             result_length = len(result)
@@ -123,6 +127,8 @@ class XmlDogma(dogma.Dogma):
         path exists and add helper functions to create the specific metadata block that is 
         required.
         """
+        raise NotImplementedError()
+
         split_path = xpath.split('/')
         test_paths = ['/'.join(sp[:i+1]) for i in xrange(1,len(split_path))]
         
@@ -181,7 +187,15 @@ class XmlDogma(dogma.Dogma):
         
         
     def _eval_xpath(self, xpath):
-        result = self._dataObject.xpath(xpath,namespaces=self._namespaces)
+        """
+        Evaluates xpath expressions.
+
+        Either string or XPath object.
+        """
+        if isinstance(xpath, etree.XPath):
+            result = xpath(self._dataObject)
+        else:
+            result = self._dataObject.xpath(xpath,namespaces=self._namespaces)
         
         #print 'Xpath expression:', xpath
         #print etree.tostring(self._dataObject)
@@ -190,23 +204,46 @@ class XmlDogma(dogma.Dogma):
         return result
         
         
+    def _eval_xslt(self, xslt_doc):
+        transform = etree.XSLT(xslt_doc)
+        return str(transform(self._dataObject))
+
+    def _eval(self, teaching):
+        """
+        Returns the evaluation.
+        """
+        # transform if someone called _get directly
+        if isinstance(teaching, basestring):
+            teaching = self._validate_teaching(None, teaching, namespaces=self._namespaces)
+
+        return teaching(self._dataObject)
 
     @classmethod
-    def _validate_teaching(cls, belief, teaching):
+    def _validate_teaching(cls, belief, teaching, *args, **kwargs):
         """
         Check to make sure the teaching object which will be used as a dictionary key is hashable
         """
-        if not isinstance(teaching, basestring):
-            raise XmlDogmaException('The belief "%s" does not have a valid teaching. The Teaching must be an xpath expression string. Received teaching: "%s" (type: %s)' % (belief, teaching, type(teaching)))
-        
-        if teaching.startswith('//'):
-            raise XmlDogmaException('The belief "%s" does not have a valid teaching. The Teaching must be a unique xpath expression which can not start with "//". Received teaching: "%s"' % (belief, teaching))
-        
-        
-        
-        
-        
-        
+        # attempt to transform
+        namespaces = kwargs.get('namespaces', None)
+        if not namespaces:
+            for a in args:
+                if isinstance(a, dict): # @TODO check types
+                    namespaces = a
+                    break
+
+        try:
+            return etree.XPath(teaching, namespaces=namespaces or {})
+        except:
+            pass
+
+        try:
+            xml_doc = etree.XML(teaching)
+            return etree.XSLT(xml_doc)
+        except:
+            pass
+
+        raise XmlDogmaException('The belief "%s" does not have a valid teaching. The Teaching must be an xpath string or xslt document. Received teaching: "%s" (type: %s)' % (belief, teaching, type(teaching)))
+
 class MultipleXmlDogma(XmlDogma):
     """
     A mostly read-only Dogma that allows the returning of multiple values from a belief.

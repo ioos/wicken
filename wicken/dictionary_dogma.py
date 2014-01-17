@@ -47,21 +47,22 @@ class DictionaryDogma(dogma.Dogma):
 
         super(DictionaryDogma, self).__init__(religion, beliefs, dataObject)   
 
-    def _get(self,key):        
+    def _get(self, key, options=None):
         return self._dataObject[key]
         
-    def _set(self,key,value):
+    def _set(self,key,value, options=None):
         self._dataObject.__setitem__(key,value)
 
-    def _del(self,key):
+    def _del(self,key, options=None):
         del self._dataObject[key]
 
 
     @classmethod
-    def _validate_teaching(cls, belief, teaching):
+    def _validate_teaching(cls, belief, teaching, *args, **kwargs):
         """
         Check to make sure the teaching object which will be used as a dictionary key is hashable
         """
         if teaching.__hash__ is None:
             raise DictionaryDogmaException(''''The belief '%s' does not have a hashable teaching '%s' ''' % (belief, teaching ))
         
+        return teaching

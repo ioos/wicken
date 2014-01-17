@@ -49,10 +49,12 @@ class NetCDFDogma(xml_dogma.XmlDogma):
 
 
     @classmethod
-    def _validate_teaching(cls, belief, teaching):
+    def _validate_teaching(cls, belief, teaching, *args, **kwargs):
         """
         Check to make sure the teaching object which will be used as a dictionary key is hashable
         """
         if not isinstance(teaching, basestring):
             raise NetCDFDogmaException('The belief "%s" does not have a valid teaching. The Teaching must be an xpath expression string. Received teaching: "%s"' % (belief, teaching))
+
+        return teaching
 

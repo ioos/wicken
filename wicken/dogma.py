@@ -106,16 +106,16 @@ class MetaReligion(type):
             belief, opts = cls._fixup_belief(origbelief)
 
             if isinstance(teaching, dict):
-                doc      = teaching['desc']
-                teaching = teaching['query']
-
                 # store old name
                 teaching['original_name'] = origbelief
+
+                doc      = teaching['desc']
+                teaching = teaching['query']
             else:
                 doc      = cls._create_doc(belief, teaching)
 
-            # use a class method from the Dogma class to validate the teaching        
-            cls._validate_teaching(belief, teaching)
+            # use a class method from the Dogma class to validate/transform the teaching
+            teaching = cls._validate_teaching(belief, teaching, *args, **kwargs)
 
             clsDict[belief] = Tenets(belief, teaching, doc=doc, options=opts)
         
@@ -186,12 +186,12 @@ class Dogma(object):
         
 
     @classmethod
-    def _validate_teaching(cls, belief, teaching):
+    def _validate_teaching(cls, belief, teaching, *args, **kwargs):
         """
         Default implementation of the validation method for the teaching objects used as 
         keys in the _get and _set methods
         """
-        pass
+        return teaching
         
 
     @classmethod
