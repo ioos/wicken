@@ -109,7 +109,7 @@ class MetaReligion(type):
                 # store old name
                 teaching['original_name'] = origbelief
 
-                doc      = teaching['desc']
+                doc      = teaching.get('desc', '')
                 teaching = teaching['query']
             else:
                 doc      = cls._create_doc(belief, teaching)
