@@ -34,7 +34,7 @@ class NetCDFDogmaException(WickenException):
     """
     pass
 
-class NetCDFDogma(xml_dogma.XmlDogma):
+class NetCDFDogma(xml_dogma.MultipleXmlDogma):
 
 
     def __init__(self, religion, beliefs, dataObject=None, namespaces=None):
@@ -53,8 +53,24 @@ class NetCDFDogma(xml_dogma.XmlDogma):
         """
         Check to make sure the teaching object which will be used as a dictionary key is hashable
         """
-        if not isinstance(teaching, basestring):
-            raise NetCDFDogmaException('The belief "%s" does not have a valid teaching. The Teaching must be an xpath expression string. Received teaching: "%s"' % (belief, teaching))
+        # attempt to transform
+        namespaces = kwargs.get('namespaces', None)
+        if not namespaces:
+            for a in args:
+                if isinstance(a, dict): # @TODO check types
+                    namespaces = a
+                    break
 
-        return teaching
+        try:
+            return etree.XPath(teaching, namespaces=namespaces or {})
+        except:
+            pass
+
+        try:
+            xml_doc = etree.XML(teaching)
+            return etree.XSLT(xml_doc)
+        except:
+            pass
+
+        raise XmlDogmaException('The belief "%s" does not have a valid teaching. The Teaching must be an xpath string or xslt document. Received teaching: "%s" (type: %s)' % (belief, teaching, type(teaching)))
 
