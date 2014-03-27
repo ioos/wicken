@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 '''
-COPYRIGHT 2013 David Stuebe
+COPYRIGHT 2013 RPS ASA
 
 This file is part of Wicken.
 
