@@ -2,8 +2,8 @@ wicken
 ======
 metadata companion library for paegan data model
 
-***COPYRIGHT 2013 RPS ASA
-***Author David Stuebe
+**COPYRIGHT 2013 RPS ASA**
+
 
 description
 ============
