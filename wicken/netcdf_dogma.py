@@ -72,5 +72,5 @@ class NetCDFDogma(xml_dogma.MultipleXmlDogma):
         except:
             pass
 
-        raise XmlDogmaException('The belief "%s" does not have a valid teaching. The Teaching must be an xpath string or xslt document. Received teaching: "%s" (type: %s)' % (belief, teaching, type(teaching)))
+        raise xml_dogma.XmlDogmaException('The belief "%s" does not have a valid teaching. The Teaching must be an xpath string or xslt document. Received teaching: "%s" (type: %s)' % (belief, teaching, type(teaching)))
 
