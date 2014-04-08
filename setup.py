@@ -6,7 +6,7 @@ except ImportError:
 
 setup(
     name='Wicken',
-    version='0.1',
+    version='0.1.1',
     description='Maps metadata concepts to concrete specifations and file formats',
     author='David Stuebe',
     author_email='DStuebe@ASAScience.com',
@@ -25,7 +25,7 @@ setup(
     packages= ['wicken'],
     install_requires = [
             'nose>=1.2.0',
-            'lxml>=3.2.1',
+            'lxml==3.2.1',
             'petulant-bear>=0.1'
             ],
 )
