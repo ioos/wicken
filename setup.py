@@ -7,23 +7,25 @@ except ImportError:
 setup(
     name='Wicken',
     version='0.1',
-    description='Maps metadata concepts to concrete spefications and file formats',
+    description='Maps metadata concepts to concrete specifations and file formats',
     author='David Stuebe',
     author_email='DStuebe@ASAScience.com',
-    url='https://github.com/asascience-open/wicken',
+    url='https://github.com/ioos/wicken',
     classifiers=[
-        'License :: GNU GPL',
-        'Topic :: OGC :: Metadata',
-        'Topic :: NetCDF :: CF',
-        'Topic :: ISO :: Metadata'
-        ],
-    license='GNU GPL',
+        'Development Status :: 3 - Alpha',
+        'Intended Audience :: Developers',
+        'Intended Audience :: Science/Research',
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        'Operating System :: POSIX :: Linux',
+        'Programming Language :: Python',
+        'Topic :: Scientific/Engineering',
+    ],
+    license='GPLv3',
     keywords='Metadata ISO OGC NetCDF lxml xml ncml',
     packages= ['wicken'],
-    dependency_links = ['http://github.com/asascience-open/petulant-bear/tarball/master#egg=Petulant_Bear-0.1'],
     install_requires = [
             'nose>=1.2.0',
             'lxml>=3.2.1',
-            'Petulant_Bear>=0.1'
+            'petulant-bear>=0.1'
             ],
 )
