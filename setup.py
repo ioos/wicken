@@ -7,7 +7,7 @@ except ImportError:
 setup(
     name='Wicken',
     version='0.1.2',
-    description='Maps metadata concepts to concrete specifations and file formats',
+    description='Maps metadata concepts to concrete specifications and file formats',
     author='David Stuebe',
     author_email='DStuebe@ASAScience.com',
     url='https://github.com/ioos/wicken',
@@ -20,7 +20,7 @@ setup(
         'Programming Language :: Python',
         'Topic :: Scientific/Engineering',
     ],
-    license='GPLv3',
+    license='Apache 2.0',
     keywords='Metadata ISO OGC NetCDF lxml xml ncml',
     packages= ['wicken'],
     install_requires = [
