@@ -27,6 +27,7 @@ from petulantbear.netcdf_etree import *
 from petulantbear.netcdf_etree import namespaces as default_namespaces
 import xml_dogma
 from exceptions import WickenException
+from netCDF4 import Dataset
 
 class NetCDFDogmaException(WickenException):
     """
