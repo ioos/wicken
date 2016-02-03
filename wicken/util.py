@@ -16,25 +16,22 @@ This file is part of Wicken.
 
     You should have received a copy of the GNU General Public License
     along with Wicken.  If not, see <http://www.gnu.org/licenses/>.
-    
+
 @author David Stuebe <dstuebe@asasscience.com>
 @file util.py
 @date 06/03/13
 @description Utility module for functions and helpers
 '''
 
-
+from __future__ import absolute_import, print_function, division
 
 from pprint import pprint
-import StringIO
-
-
+import io
 
 def pretty_print(obj):
-
     contents = "Pretty Print Failed :-("
     try:
-        output = StringIO.StringIO()
+        output = io.StringIO()
         pprint(obj, output)
         contents = output.getvalue()
     finally:

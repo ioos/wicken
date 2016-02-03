@@ -23,23 +23,25 @@ This file is part of Wicken.
 @description exception classes for the wicken project
 '''
 
+from __future__ import absolute_import, print_function, division
+
 class WickenException(Exception):
     """
     Base class for all exceptions in Wicken
     """
     pass
-    
+
 class DogmaGetterSetterException(WickenException):
     """
     Exception class for errors during get or set of a dogmatic belief (a property)
     """
-    pass  
+    pass
 
 class DogmaDeleteException(WickenException):
     """
     Exception class for errors while deleting of a dogmatic belief (a property)
     """
-    pass  
+    pass
 
 
 
@@ -48,5 +50,4 @@ class DogmaMetaClassException(WickenException):
     """
     Exception class for errors while creating the dogma class for a particular set of beliefs
     """
-    pass  
-    
+    pass

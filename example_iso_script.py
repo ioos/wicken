@@ -1,8 +1,7 @@
-
+from __future__ import absolute_import, print_function, division
 
 from lxml import etree
 from wicken.xml_dogma import XmlDogma
-
 
 
 iso_metadata_beliefs = {
@@ -59,4 +58,3 @@ with open('out.xml','w') as f:
     f.write(etree.tostring(xml_etree))
 
 
-    

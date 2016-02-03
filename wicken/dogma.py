@@ -20,30 +20,33 @@ This file is part of Wicken.
 @author David Stuebe <dstuebe@asasscience.com>
 @file dogma.py
 @date 06/03/13
-@description The dogma module provides a metaclass based approach to mapping a flat name 
+@description The dogma module provides a metaclass based approach to mapping a flat name
 space for class properties to any storage format and metadata schema. Example classes are
 implemented for a dictionary storage. A particular mapping from the flat namespace used for
-the properties to the metadata schema must be provided at runtime. 
+the properties to the metadata schema must be provided at runtime.
 '''
 
+from __future__ import absolute_import, print_function, division
+from six import iteritems, with_metaclass
+
 import re
-from exceptions import DogmaGetterSetterException
-from exceptions import DogmaMetaClassException
-from exceptions import DogmaDeleteException
+from .exceptions import DogmaGetterSetterException
+from .exceptions import DogmaMetaClassException
+from .exceptions import DogmaDeleteException
 
 class Tenets(object):
     def __init__(self, belief, teaching, doc, options=None):
         '''
         belief is a string which will become a property of a particular dogma object
-        teaching is the string, collection or object that is used by the _set and 
-        _get method of this Dogma to map a belieft about what a metadata element should be 
+        teaching is the string, collection or object that is used by the _set and
+        _get method of this Dogma to map a belieft about what a metadata element should be
         called by IOOS to a particular schema, say ISO XML or NetCDF CF.
         '''
         self.belief = belief
         self.teaching = teaching
         self.__doc__ = doc
         self.options = options or {}
-        
+
 
     def __get__(self, dogma, objtype=None):
         try:
@@ -54,8 +57,8 @@ class Tenets(object):
             #exception_string += '''Instance data object status: '%s'\n''' % dogma._dataObject
             exception_string += '''Get operation raised exception: '%s' ''' % ex.__repr__()
             raise DogmaGetterSetterException(exception_string)
-        
-        
+
+
     def __set__(self, dogma, value):
         try:
             dogma._set(self.teaching, value, self.options)
@@ -65,7 +68,7 @@ class Tenets(object):
             #exception_string += '''Instance data object status: '%s'\n''' % dogma._dataObject
             exception_string += '''Set operation raised exception: '%s' ''' % ex.__repr__()
             raise DogmaGetterSetterException(exception_string)
-        
+
     def __delete__(self, dogma):
         try:
             dogma._del(self.teaching, self.options)
@@ -75,34 +78,34 @@ class Tenets(object):
             #exception_string += '''Instance data object status: '%s'\n''' % dogma._dataObject
             exception_string += '''Delete operation raised exception: '%s' ''' % ex.__repr__()
             raise DogmaDeleteException(exception_string)
-            
-            
+
+
 class MetaReligion(type):
     """
     Designed for working with metadata and all of the strong personal convictions that go
-    with it, 
+    with it,
     """
 
     def __call__(cls, religion, beliefs, *args, **kwargs):
         '''
         cls is the base class which new properties will be added to
         religion is the unique prefix for that class and its beliefs (properties)
-        beliefs is a dictionary that maps property names (IOOS metadata) to a particular schema (ISO, CF, etc) 
-        
+        beliefs is a dictionary that maps property names (IOOS metadata) to a particular schema (ISO, CF, etc)
+
         @TODO - store the clsTypes so that they are only generated once - but how are they identified?
         '''
         clsName = religion + cls.__name__
         clsDict={}
-        
+
         if re.match('^[\w-]+$', religion) is None:
                 raise DogmaMetaClassException('''Blasphemy! The name of your metadata religion (class name prefix: '%s') must be alpha numeric with no whitespace''' % religion)
-        
+
         clsDict['_religion'] = religion
         clsDict['_beliefs'] = beliefs
         clsDict['_fixup_belief'] = cls._fixup_belief
-        
-        for origbelief, teaching in beliefs.iteritems():
-        
+
+        for origbelief, teaching in iteritems(beliefs):
+
             belief, opts = cls._fixup_belief(origbelief)
 
             if isinstance(teaching, dict):
@@ -118,18 +121,18 @@ class MetaReligion(type):
             teaching = cls._validate_teaching(belief, teaching, *args, **kwargs)
 
             clsDict[belief] = Tenets(belief, teaching, doc=doc, options=opts)
-        
-        
+
+
         valid_propery_names = tuple(beliefs.keys())
-        
+
         def obj_setter(self, k, v):
             if not k.startswith('_') and k not in valid_propery_names:
                 raise AttributeError('''Blasphemy! You can't create the new beliefs (property %s) on an instance of %s - only god can create properties when the class is defined''' % (k, clsName))
             super(Dogma, self).__setattr__(k, v)
 
         clsDict['__setattr__'] = obj_setter
-        
-                
+
+
         clsType = MetaReligion.__new__(MetaReligion, clsName, (cls,), clsDict)
 
         # Finally allow the instantiation to occur, but slip in our new class type
@@ -168,31 +171,30 @@ class MetaReligion(type):
 
         return belief, extra
 
-class Dogma(object):
-    __metaclass__ = MetaReligion
-    
-    def __init__(self, religion, beliefs, dataObject):        
+class Dogma(with_metaclass(MetaReligion, object)):
+
+    def __init__(self, religion, beliefs, dataObject):
         self._dataObject = dataObject
-                
-        
+
+
     def _get(self, key):
         raise NotImplementedError('_get Method is not implemented in the Dogma Base Class!')
-        
+
     def _set(self, key, value):
         raise NotImplementedError('_set Method is not implemented in the Dogma Base Class!')
 
     def _del(self, key):
         raise NotImplementedError('_del Method is not implemented in the Dogma Base Class!')
-        
+
 
     @classmethod
     def _validate_teaching(cls, belief, teaching, *args, **kwargs):
         """
-        Default implementation of the validation method for the teaching objects used as 
+        Default implementation of the validation method for the teaching objects used as
         keys in the _get and _set methods
         """
         return teaching
-        
+
 
     @classmethod
     def _create_doc(cls, belief, teaching):

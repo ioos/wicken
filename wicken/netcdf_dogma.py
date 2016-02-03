@@ -23,11 +23,13 @@ This file is part of Wicken.
 @description Implementation of the Dogma Metadata class for NetCDF IO using NetCDF4-Python
 '''
 
+from __future__ import absolute_import, print_function, division
+
 from petulantbear.netcdf_etree import *
 from petulantbear.netcdf_etree import namespaces as default_namespaces
-import xml_dogma
-from exceptions import WickenException
 from netCDF4 import Dataset
+from . import xml_dogma
+from .exceptions import WickenException
 
 class NetCDFDogmaException(WickenException):
     """

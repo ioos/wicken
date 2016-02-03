@@ -1,4 +1,4 @@
-
+from __future__ import absolute_import, print_function, division
 
 from netCDF4 import Dataset
 from wicken.netcdf_dogma import NetCDFDogma
@@ -45,10 +45,4 @@ data_object.latitude_units
 data_object.does_not_exist
 
 with open('out.xml','w') as f:
-
     f.write(etree.tostring(data_object._dataObject))
-    
-
-
-
-    
