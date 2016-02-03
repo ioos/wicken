@@ -20,36 +20,36 @@ This file is part of Wicken.
 @author David Stuebe <dstuebe@asasscience.com>
 @file dictionary_dogma.py
 @date 06/03/13
-@description DictionaryDogma is a reference implementation for the simplest possible 
-application of the dogmatic mapping concept. 
+@description DictionaryDogma is a reference implementation for the simplest possible
+application of the dogmatic mapping concept.
 '''
-
-from exceptions import WickenException
-import dogma
+from __future__ import absolute_import, print_function, division
+from .exceptions import WickenException
+from . import dogma
 
 class DictionaryDogmaException(WickenException):
     """
     An exception class for catching problems in the Dictionary Dogma class
     """
     pass
-    
+
 
 
 class DictionaryDogma(dogma.Dogma):
-    
+
     def __init__(self, religion, beliefs, dataObject=None):
-    
+
         if dataObject is None:
             dataObject = {}
-            
+
         if not isinstance(dataObject, dict):
             raise TypeError('DictionaryDogma only allows dictionary data objects!')
 
-        super(DictionaryDogma, self).__init__(religion, beliefs, dataObject)   
+        super(DictionaryDogma, self).__init__(religion, beliefs, dataObject)
 
     def _get(self, key, options=None):
         return self._dataObject[key]
-        
+
     def _set(self,key,value, options=None):
         self._dataObject.__setitem__(key,value)
 
@@ -64,5 +64,5 @@ class DictionaryDogma(dogma.Dogma):
         """
         if teaching.__hash__ is None:
             raise DictionaryDogmaException(''''The belief '%s' does not have a hashable teaching '%s' ''' % (belief, teaching ))
-        
+
         return teaching

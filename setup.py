@@ -1,8 +1,4 @@
-try:
-    from setuptools import setup, find_packages
-    packages = find_packages()
-except ImportError:
-    from distutils import setup
+from setuptools import setup
 
 setup(
     name='Wicken',
@@ -22,9 +18,10 @@ setup(
     ],
     license='Apache 2.0',
     keywords='Metadata ISO OGC NetCDF lxml xml ncml',
-    packages= ['wicken'],
-    install_requires = [
-            'nose>=1.2.0',
+    packages=['wicken'],
+    tests_require=['nose>=1.2.0'],
+    install_requires=[
+            'netCDF4>=1.0.0',
             'lxml>=3.2.1',
             'petulant-bear>=0.1.2'
             ],
