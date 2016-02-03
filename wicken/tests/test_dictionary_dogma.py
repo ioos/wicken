@@ -25,7 +25,6 @@ This file is part of Wicken.
 
 from __future__ import absolute_import, print_function, division
 
-from nose.tools import *
 import unittest
 
 from wicken.dictionary_dogma import DictionaryDogma
@@ -55,16 +54,16 @@ class DictionaryDogmaTest(unittest.TestCase):
 
 
         d = DictionaryDogma('CF',{},None)
-        assert_equal(d._religion,'CF')
-        assert_equal(d._beliefs,{})
-        assert_equal(d._dataObject,{})
-        assert_equal(d.__class__.__name__,'CFDictionaryDogma')
+        self.assertEqual(d._religion,'CF')
+        self.assertEqual(d._beliefs,{})
+        self.assertEqual(d._dataObject,{})
+        self.assertEqual(d.__class__.__name__,'CFDictionaryDogma')
 
         d = DictionaryDogma('CF',{})
-        assert_equal(d._dataObject,{})
+        self.assertEqual(d._dataObject,{})
 
         d = DictionaryDogma('CF',{},{'gi':'joe'})
-        assert_equal(d._dataObject,{'gi':'joe'})
+        self.assertEqual(d._dataObject,{'gi':'joe'})
 
 
 
@@ -78,16 +77,16 @@ class DictionaryDogmaTest(unittest.TestCase):
         beliefs = {'foo':'bar','bat':'baz'}
         d = DictionaryDogma('CF',beliefs)
 
-        assert_equal(d._dataObject.get('bar'),None)
+        self.assertEqual(d._dataObject.get('bar'),None)
         d._set('bar','bizzar!')
-        assert_equal(d._dataObject.get('bar'),'bizzar!')
+        self.assertEqual(d._dataObject.get('bar'),'bizzar!')
 
         d = DictionaryDogma('CF',beliefs)
-        assert_equal(d._dataObject.get('bar'),None)
+        self.assertEqual(d._dataObject.get('bar'),None)
         d.foo = 'how bizzar!'
-        assert_equal(d._dataObject.get('bar'),'how bizzar!')
+        self.assertEqual(d._dataObject.get('bar'),'how bizzar!')
 
-        with assert_raises_regexp(AttributeError,"""Blasphemy! You can't create the new beliefs"""):
+        with self.assertRaisesRegexp(AttributeError,"""Blasphemy! You can't create the new beliefs"""):
             d.not_an_att = 5
 
     def test_dogma_get(self):
@@ -95,16 +94,16 @@ class DictionaryDogmaTest(unittest.TestCase):
         beliefs = {'foo':'bar','bat':'baz'}
         d = DictionaryDogma('CF',beliefs,{'bar':'boo'})
 
-        assert_equal(d._get('bar'),'boo')
-        with assert_raises(KeyError):
+        self.assertEqual(d._get('bar'),'boo')
+        with self.assertRaises(KeyError):
             d._get('bzzz')
 
-        assert_equal(d.foo, 'boo')
+        self.assertEqual(d.foo, 'boo')
 
-        with assert_raises(AttributeError):
+        with self.assertRaises(AttributeError):
             d.not_an_att
 
-        with assert_raises(DogmaGetterSetterException):
+        with self.assertRaises(DogmaGetterSetterException):
             d.bat
 
     def test_dogma_del(self):
@@ -112,24 +111,24 @@ class DictionaryDogmaTest(unittest.TestCase):
         beliefs = {'foo':'bar','bat':'baz'}
         d = DictionaryDogma('CF',beliefs,{'bar':'boo'})
 
-        assert_equal(d._dataObject.get('bar'),'boo')
+        self.assertEqual(d._dataObject.get('bar'),'boo')
         d._del('bar')
-        assert_equal(d._dataObject.get('bar'),None)
+        self.assertEqual(d._dataObject.get('bar'),None)
 
         d._dataObject['bar'] = 'bamboo'
-        assert_equal(d.foo, 'bamboo')
+        self.assertEqual(d.foo, 'bamboo')
         del d.foo
 
-        assert_equal(d._dataObject.get('bar'), None)
+        self.assertEqual(d._dataObject.get('bar'), None)
 
-        with assert_raises(DogmaGetterSetterException):
+        with self.assertRaises(DogmaGetterSetterException):
             d.foo
 
         # Call it again!
-        with assert_raises(DogmaDeleteException):
+        with self.assertRaises(DogmaDeleteException):
             del d.foo
 
-        with assert_raises(AttributeError):
+        with self.assertRaises(AttributeError):
             del d.not_an_att
 
     def test_dogma_validate_teaching(self):
@@ -138,16 +137,16 @@ class DictionaryDogmaTest(unittest.TestCase):
         d = DictionaryDogma('CF',beliefs,None)
 
         ret = d._validate_teaching('foo','bar')
-        assert_is(ret, 'bar')
+        self.assertIs(ret, 'bar')
 
         DictionaryDogma._validate_teaching('foo','bar')
-        assert_is(ret, 'bar')
+        self.assertIs(ret, 'bar')
 
-        with assert_raises_regexp(DictionaryDogmaException,"""The belief """):
+        with self.assertRaisesRegexp(DictionaryDogmaException,"""The belief """):
             ret = d._validate_teaching('foo',[])
 
 
-        with assert_raises_regexp(DictionaryDogmaException,"""The belief """):
+        with self.assertRaisesRegexp(DictionaryDogmaException,"""The belief """):
             beliefs = {'foo':[],'bat':'baz'}
             d = DictionaryDogma('CF',beliefs,None)
 

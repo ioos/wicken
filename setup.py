@@ -19,7 +19,7 @@ setup(
     license='Apache 2.0',
     keywords='Metadata ISO OGC NetCDF lxml xml ncml',
     packages=['wicken'],
-    tests_require=['nose>=1.2.0'],
+    tests_require=['pytest>=2.7.0'],
     install_requires=[
             'netCDF4>=1.0.0',
             'lxml>=3.2.1',

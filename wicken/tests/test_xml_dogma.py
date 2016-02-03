@@ -27,7 +27,6 @@ This file is part of Wicken.
 
 from __future__ import absolute_import, print_function, division
 
-from nose.tools import *
 import unittest
 from io import BytesIO
 from lxml import etree
@@ -97,17 +96,17 @@ class XmlDogmaTest(unittest.TestCase):
     def test_init(self):
 
         d = XmlDogma('Books',{},None)
-        assert_equal(d._religion,'Books')
-        assert_equal(d._beliefs,{})
-        assert_equal(d._dataObject.tag,'root')
-        assert_equal(d.__class__.__name__,'BooksXmlDogma')
+        self.assertEqual(d._religion,'Books')
+        self.assertEqual(d._beliefs,{})
+        self.assertEqual(d._dataObject.tag,'root')
+        self.assertEqual(d.__class__.__name__,'BooksXmlDogma')
 
         d = XmlDogma('Books', {})
-        assert_equal(d._dataObject.tag, 'root')
+        self.assertEqual(d._dataObject.tag, 'root')
 
         dataObject = etree.parse(BytesIO(BOOKS))
         d = XmlDogma('Books', {}, dataObject)
-        assert_equal(d._dataObject, dataObject)
+        self.assertEqual(d._dataObject, dataObject)
 
 
     def test_help(self):
@@ -123,10 +122,10 @@ class XmlDogmaTest(unittest.TestCase):
         dataObject = etree.parse(BytesIO(BOOKS))
         d = XmlDogma('Books',beliefs,dataObject)
 
-        with assert_raises_regexp(AttributeError,"""Blasphemy! You can't create the new beliefs"""):
+        with self.assertRaisesRegexp(AttributeError,"""Blasphemy! You can't create the new beliefs"""):
             d.not_a_belief = 5
 
-        with assert_raises_regexp(DogmaGetterSetterException,"""Error setting the 'foobar' property of the class 'BooksXmlDogma'"""):
+        with self.assertRaisesRegexp(DogmaGetterSetterException,"""Error setting the 'foobar' property of the class 'BooksXmlDogma'"""):
             d.foobar = 5
 
 
@@ -139,20 +138,20 @@ class XmlDogmaTest(unittest.TestCase):
         # Set the text using _set
         dataObject = etree.parse(BytesIO(BOOKS))
         d = XmlDogma('Books',beliefs,dataObject)
-        assert_equal(d._get('/bookstore/book[1]/title'),'Everyday Italian')
+        self.assertEqual(d._get('/bookstore/book[1]/title'),'Everyday Italian')
         d._set('/bookstore/book[1]/title','Z french is better!')
-        assert_equal(d._get('/bookstore/book[1]/title'),'Z french is better!')
+        self.assertEqual(d._get('/bookstore/book[1]/title'),'Z french is better!')
 
         # Set using the attribute
         dataObject = etree.parse(BytesIO(BOOKS))
         d = XmlDogma('Books',beliefs,dataObject)
-        assert_equal(d._get('/bookstore/book[1]/title'),'Everyday Italian')
+        self.assertEqual(d._get('/bookstore/book[1]/title'),'Everyday Italian')
         d.book_title = 'Z french is better!'
-        assert_equal(d._get('/bookstore/book[1]/title'),'Z french is better!')
+        self.assertEqual(d._get('/bookstore/book[1]/title'),'Z french is better!')
 
-        assert_equal(d._get("""/bookstore/book[@category = 'CHILDREN']/title"""),'Harry Potter')
+        self.assertEqual(d._get("""/bookstore/book[@category = 'CHILDREN']/title"""),'Harry Potter')
         d.childrens_title = 'potter harry'
-        assert_equal(d._get("""/bookstore/book[@category = 'CHILDREN']/title"""),'potter harry')
+        self.assertEqual(d._get("""/bookstore/book[@category = 'CHILDREN']/title"""),'potter harry')
 
 
     def dont_txxt_dogma_set_attribute_text(self):
@@ -162,16 +161,16 @@ class XmlDogmaTest(unittest.TestCase):
         # Set the text using _set
         dataObject = etree.parse(BytesIO(BOOKS))
         d = XmlDogma('Books',beliefs,dataObject)
-        assert_equal(d._get('/bookstore/book[1]/@category'),'COOKING')
+        self.assertEqual(d._get('/bookstore/book[1]/@category'),'COOKING')
         d._set('/bookstore/book[1]/@category','FOOBAR')
-        assert_equal(d._get('/bookstore/book[1]/@category'),'FOOBAR')
+        self.assertEqual(d._get('/bookstore/book[1]/@category'),'FOOBAR')
 
         # Set using the attribute
         dataObject = etree.parse(BytesIO(BOOKS))
         d = XmlDogma('Books',beliefs,dataObject)
-        assert_equal(d._get('/bookstore/book[1]/@category'),'COOKING')
+        self.assertEqual(d._get('/bookstore/book[1]/@category'),'COOKING')
         d.book_category = 'CLEANING'
-        assert_equal(d._get('/bookstore/book[1]/@category'),'CLEANING')
+        self.assertEqual(d._get('/bookstore/book[1]/@category'),'CLEANING')
 
 
 
@@ -184,13 +183,13 @@ class XmlDogmaTest(unittest.TestCase):
 
         d = XmlDogma('Books',beliefs,dataObject)
 
-        with assert_raises(XmlDogmaException):
+        with self.assertRaises(XmlDogmaException):
             d._get('bzzz')
 
-        with assert_raises(DogmaGetterSetterException):
+        with self.assertRaises(DogmaGetterSetterException):
             d.book_title
 
-        with assert_raises(AttributeError):
+        with self.assertRaises(AttributeError):
             d.not_an_att
 
 
@@ -204,15 +203,15 @@ class XmlDogmaTest(unittest.TestCase):
 
         d = XmlDogma('Books',beliefs,dataObject)
 
-        assert_equal(d._get('/bookstore/book[1]/title'),'Everyday Italian')
+        self.assertEqual(d._get('/bookstore/book[1]/title'),'Everyday Italian')
 
-        assert_equal(d.book_title, 'Everyday Italian')
+        self.assertEqual(d.book_title, 'Everyday Italian')
 
-        assert_equal(d.childrens_title, 'Harry Potter')
+        self.assertEqual(d.childrens_title, 'Harry Potter')
 
-        assert_equal(d.childrens_year, '2005')
+        self.assertEqual(d.childrens_year, '2005')
 
-        with assert_raises(DogmaGetterSetterException):
+        with self.assertRaises(DogmaGetterSetterException):
             d.no_title
 
 
@@ -223,9 +222,9 @@ class XmlDogmaTest(unittest.TestCase):
 
         d = XmlDogma('Books',beliefs,dataObject)
 
-        assert_equal(d._get('/bookstore/book[1]/@category'),'COOKING')
+        self.assertEqual(d._get('/bookstore/book[1]/@category'),'COOKING')
 
-        assert_equal(d.book_category, 'COOKING')
+        self.assertEqual(d.book_category, 'COOKING')
 
 
 
@@ -236,13 +235,13 @@ class XmlDogmaTest(unittest.TestCase):
 
         d = XmlDogma('Books',beliefs,dataObject)
 
-        with assert_raises(DogmaDeleteException):
+        with self.assertRaises(DogmaDeleteException):
             del d.book_title
 
-        with assert_raises(DogmaDeleteException):
+        with self.assertRaises(DogmaDeleteException):
             del d.book_foo
 
-        with assert_raises(AttributeError):
+        with self.assertRaises(AttributeError):
             del d.non_existing
 
 
@@ -254,15 +253,15 @@ class XmlDogmaTest(unittest.TestCase):
 
         d = XmlDogma('Books',beliefs,dataObject)
 
-        assert_equal(d._get('/bookstore/book[1]/@category'),'COOKING')
+        self.assertEqual(d._get('/bookstore/book[1]/@category'),'COOKING')
 
         del d.book_category
 
-        with assert_raises(XmlDogmaException):
+        with self.assertRaises(XmlDogmaException):
             d._get('/bookstore/book[1]/@category')
 
-        with assert_raises(DogmaGetterSetterException):
-            assert_equal(d.book_category, None)
+        with self.assertRaises(DogmaGetterSetterException):
+            self.assertEqual(d.book_category, None)
 
 
     def dont_txxt_dogma_del_element(self):
@@ -272,13 +271,13 @@ class XmlDogmaTest(unittest.TestCase):
 
         d = XmlDogma('Books',beliefs,dataObject)
 
-        assert_equal(d._get('/bookstore/book[1]/title'),'Everyday Italian')
+        self.assertEqual(d._get('/bookstore/book[1]/title'),'Everyday Italian')
 
         del d.book_title
 
-        with assert_raises(XmlDogmaException):
+        with self.assertRaises(XmlDogmaException):
             d._get('/bookstore/book[1]/title')
-        with assert_raises(DogmaGetterSetterException):
+        with self.assertRaises(DogmaGetterSetterException):
             d.book_title
 
 
@@ -289,19 +288,19 @@ class XmlDogmaTest(unittest.TestCase):
         d = XmlDogma('Books',beliefs,None)
 
         ret = d._validate_teaching('foo','bar')
-        #assert_is(ret, None)
+        #self.assertIs(ret, None)
 
         ret = XmlDogma._validate_teaching('foo','bar')
-        #assert_is(ret, None)
+        #self.assertIs(ret, None)
 
-        #with assert_raises_regexp(XmlDogmaException,"""The belief """):
+        #with self.assertRaisesRegexp(XmlDogmaException,"""The belief """):
         #    XmlDogma._validate_teaching('foo','//bar')
 
-        with assert_raises_regexp(XmlDogmaException,"""The belief """):
+        with self.assertRaisesRegexp(XmlDogmaException,"""The belief """):
             ret = d._validate_teaching('foo',[])
 
 
-        with assert_raises_regexp(XmlDogmaException,"""The belief """):
+        with self.assertRaisesRegexp(XmlDogmaException,"""The belief """):
             beliefs = {'foo':[],'bat':'baz'}
             d = XmlDogma('Books',beliefs,None)
 
